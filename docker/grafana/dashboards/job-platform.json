@@ -1,0 +1,159 @@
+{
+  "uid": "job-platform-overview",
+  "title": "Job Platform — Execution and Reliability",
+  "schemaVersion": 41,
+  "version": 1,
+  "tags": ["job-platform", "learning"],
+  "timezone": "browser",
+  "refresh": "5s",
+  "time": {"from": "now-15m", "to": "now"},
+  "editable": false,
+  "annotations": {"list": []},
+  "panels": [
+    {
+      "id": 1, "type": "stat", "title": "Scrape target health (1 = UP)",
+      "gridPos": {"x": 0, "y": 0, "w": 6, "h": 4},
+      "datasource": {"type": "prometheus", "uid": "job-platform-prometheus"},
+      "targets": [{"refId": "A", "expr": "up{job=~\"job-platform|rabbitmq\"}", "legendFormat": "{{job}}", "instant": true}],
+      "fieldConfig": {"defaults": {"min": 0, "max": 1, "thresholds": {"mode": "absolute", "steps": [{"color": "red"}, {"value": 1, "color": "green"}]}}, "overrides": []}
+    },
+    {
+      "id": 2, "type": "stat", "title": "DB snapshot healthy / age in seconds",
+      "description": "Last-known values can be stale. Snapshot up=0 or old age means do not trust backlog totals.",
+      "gridPos": {"x": 6, "y": 0, "w": 6, "h": 4},
+      "datasource": {"type": "prometheus", "uid": "job-platform-prometheus"},
+      "targets": [
+        {"refId": "A", "expr": "jobs_snapshot_up", "legendFormat": "snapshot up", "instant": true},
+        {"refId": "B", "expr": "time() - jobs_snapshot_last_success_seconds", "legendFormat": "snapshot age", "instant": true}
+      ]
+    },
+    {
+      "id": 3, "type": "stat", "title": "Local workers: active / capacity / paused",
+      "gridPos": {"x": 12, "y": 0, "w": 12, "h": 4},
+      "datasource": {"type": "prometheus", "uid": "job-platform-prometheus"},
+      "targets": [
+        {"refId": "A", "expr": "jobs_worker_active", "legendFormat": "active handlers", "instant": true},
+        {"refId": "B", "expr": "jobs_worker_capacity", "legendFormat": "capacity", "instant": true},
+        {"refId": "C", "expr": "jobs_worker_paused", "legendFormat": "paused", "instant": true},
+        {"refId": "D", "expr": "jobs_worker_consumers", "legendFormat": "consumers", "instant": true}
+      ]
+    },
+    {
+      "id": 4, "type": "timeseries", "title": "Stored job counts by status (DB snapshot)",
+      "gridPos": {"x": 0, "y": 4, "w": 12, "h": 7},
+      "datasource": {"type": "prometheus", "uid": "job-platform-prometheus"},
+      "targets": [{"refId": "A", "expr": "jobs_state", "legendFormat": "{{status}}"}]
+    },
+    {
+      "id": 5, "type": "timeseries", "title": "RabbitMQ: ready / unacknowledged messages",
+      "description": "Broker aggregate metrics: this deployment has one job queue. Not interchangeable with PostgreSQL QUEUED count.",
+      "gridPos": {"x": 12, "y": 4, "w": 12, "h": 7},
+      "datasource": {"type": "prometheus", "uid": "job-platform-prometheus"},
+      "targets": [
+        {"refId": "A", "expr": "rabbitmq_queue_messages_ready", "legendFormat": "ready"},
+        {"refId": "B", "expr": "rabbitmq_queue_messages_unacked", "legendFormat": "unacknowledged"}
+      ]
+    },
+    {
+      "id": 6, "type": "timeseries", "title": "Accepted jobs vs terminal outcomes per second",
+      "description": "Process-local counters after commit. Accepted excludes idempotent replays and manual-cycle resets; counters reset on restart.",
+      "gridPos": {"x": 0, "y": 11, "w": 12, "h": 7},
+      "datasource": {"type": "prometheus", "uid": "job-platform-prometheus"},
+      "targets": [
+        {"refId": "A", "expr": "sum(rate(jobs_accepted_total[1m]))", "legendFormat": "new jobs accepted"},
+        {"refId": "B", "expr": "sum by (outcome) (rate(jobs_terminal_total[1m]))", "legendFormat": "terminal {{outcome}}"}
+      ]
+    },
+    {
+      "id": 7, "type": "timeseries", "title": "Retries and attempt failures per second",
+      "gridPos": {"x": 12, "y": 11, "w": 12, "h": 7},
+      "datasource": {"type": "prometheus", "uid": "job-platform-prometheus"},
+      "targets": [
+        {"refId": "A", "expr": "sum by (kind) (rate(jobs_retry_events_total[1m]))", "legendFormat": "{{kind}} retry queued"},
+        {"refId": "B", "expr": "sum by (failure) (rate(jobs_attempt_outcomes_total{outcome=~\"FAILED|EXPIRED\"}[1m]))", "legendFormat": "{{failure}}"}
+      ]
+    },
+    {
+      "id": 8, "type": "timeseries", "title": "HTTP submission latency p95 / p99 (seconds)",
+      "description": "Server HTTP duration through response handling, not client network latency. Only POST /jobs; batch/retry have their own URI series.",
+      "gridPos": {"x": 0, "y": 18, "w": 12, "h": 7},
+      "datasource": {"type": "prometheus", "uid": "job-platform-prometheus"},
+      "fieldConfig": {"defaults": {"unit": "s"}, "overrides": []},
+      "targets": [
+        {"refId": "A", "expr": "histogram_quantile(0.95, sum by (le) (rate(http_server_requests_seconds_bucket{uri=\"/jobs\",method=\"POST\"}[5m])))", "legendFormat": "p95"},
+        {"refId": "B", "expr": "histogram_quantile(0.99, sum by (le) (rate(http_server_requests_seconds_bucket{uri=\"/jobs\",method=\"POST\"}[5m])))", "legendFormat": "p99"}
+      ]
+    },
+    {
+      "id": 9, "type": "timeseries", "title": "Creation-to-first-start p95 (seconds, commit approximation)",
+      "description": "Includes acceptance transaction time before commit. This is NOT exact acceptance-commit-to-start latency and never uses mutable latest job start.",
+      "gridPos": {"x": 12, "y": 18, "w": 12, "h": 7},
+      "datasource": {"type": "prometheus", "uid": "job-platform-prometheus"},
+      "fieldConfig": {"defaults": {"unit": "s"}, "overrides": []},
+      "targets": [
+        {"refId": "A", "expr": "histogram_quantile(0.95, sum by (le,type) (rate(jobs_first_start_delay_seconds_bucket[5m])))", "legendFormat": "{{type}} p95"},
+        {"refId": "B", "expr": "histogram_quantile(0.99, sum by (le,type) (rate(jobs_first_start_delay_seconds_bucket[5m])))", "legendFormat": "{{type}} p99"}
+      ]
+    },
+    {
+      "id": 10, "type": "timeseries", "title": "Attempt duration p95 by outcome (seconds)",
+      "description": "Recorded attempt start to terminal record, including outcome persistence/expiry detection; not handler-only CPU time.",
+      "gridPos": {"x": 0, "y": 25, "w": 12, "h": 7},
+      "datasource": {"type": "prometheus", "uid": "job-platform-prometheus"},
+      "fieldConfig": {"defaults": {"unit": "s"}, "overrides": []},
+      "targets": [
+        {"refId": "A", "expr": "histogram_quantile(0.95, sum by (le,outcome) (rate(jobs_attempt_duration_seconds_bucket[5m])))", "legendFormat": "{{outcome}} p95"},
+        {"refId": "B", "expr": "histogram_quantile(0.99, sum by (le,outcome) (rate(jobs_attempt_duration_seconds_bucket[5m])))", "legendFormat": "{{outcome}} p99"}
+      ]
+    },
+    {
+      "id": 11, "type": "timeseries", "title": "Outbox pending / due retries / expired leases",
+      "gridPos": {"x": 12, "y": 25, "w": 12, "h": 7},
+      "datasource": {"type": "prometheus", "uid": "job-platform-prometheus"},
+      "targets": [
+        {"refId": "A", "expr": "jobs_outbox_pending", "legendFormat": "outbox pending"},
+        {"refId": "B", "expr": "jobs_retry_due", "legendFormat": "retry due"},
+        {"refId": "C", "expr": "jobs_leases_expired", "legendFormat": "expired lease"}
+      ]
+    },
+    {
+      "id": 12, "type": "timeseries", "title": "Database pools: active / pending connections",
+      "gridPos": {"x": 0, "y": 32, "w": 12, "h": 7},
+      "datasource": {"type": "prometheus", "uid": "job-platform-prometheus"},
+      "targets": [
+        {"refId": "A", "expr": "hikaricp_connections_active", "legendFormat": "{{pool}} active"},
+        {"refId": "B", "expr": "hikaricp_connections_pending", "legendFormat": "{{pool}} pending"}
+      ]
+    },
+    {
+      "id": 13, "type": "timeseries", "title": "Transport/snapshot errors per second",
+      "gridPos": {"x": 12, "y": 32, "w": 12, "h": 7},
+      "datasource": {"type": "prometheus", "uid": "job-platform-prometheus"},
+      "targets": [
+        {"refId": "A", "expr": "rate(jobs_outbox_failures_total[1m])", "legendFormat": "publish errors"},
+        {"refId": "B", "expr": "rate(jobs_messages_unresolved_total[1m])", "legendFormat": "unresolved delivery"},
+        {"refId": "C", "expr": "rate(jobs_snapshot_failures_total[1m])", "legendFormat": "snapshot failure"}
+      ]
+    },
+    {
+      "id": 14, "type": "timeseries", "title": "Oldest unpublished outbox age (seconds)",
+      "gridPos": {"x": 0, "y": 39, "w": 8, "h": 7},
+      "datasource": {"type": "prometheus", "uid": "job-platform-prometheus"},
+      "fieldConfig": {"defaults": {"unit": "s"}, "overrides": []},
+      "targets": [{"refId": "A", "expr": "jobs_outbox_oldest_age_seconds", "legendFormat": "oldest pending"}]
+    },
+    {
+      "id": 15, "type": "timeseries", "title": "Committed lease renewals per second",
+      "gridPos": {"x": 8, "y": 39, "w": 8, "h": 7},
+      "datasource": {"type": "prometheus", "uid": "job-platform-prometheus"},
+      "targets": [{"refId": "A", "expr": "rate(jobs_heartbeat_renewed_total[1m])", "legendFormat": "renewals"}]
+    },
+    {
+      "id": 16, "type": "timeseries", "title": "JVM used memory (bytes)",
+      "gridPos": {"x": 16, "y": 39, "w": 8, "h": 7},
+      "datasource": {"type": "prometheus", "uid": "job-platform-prometheus"},
+      "fieldConfig": {"defaults": {"unit": "bytes"}, "overrides": []},
+      "targets": [{"refId": "A", "expr": "sum by (area) (jvm_memory_used_bytes)", "legendFormat": "{{area}}"}]
+    }
+  ]
+}

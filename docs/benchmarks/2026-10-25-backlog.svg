@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="350" viewBox="0 0 960 350" style="display:block;max-width:960px;width:100%;height:auto" role="img" aria-labelledby="title description">
+<title id="title">Measured unfinished jobs during a one-minute submission window</title>
+<desc id="description">The overloaded one-second simulation rises to 326 unfinished jobs, while the ECHO and lower-rate simulation show bounded in-flight work.</desc>
+<rect width="960" height="350" rx="12" fill="#0f172a"/>
+<text x="35" y="32" fill="#f8fafc" font-family="sans-serif" font-size="20">Unfinished accepted jobs — isolated run, 25 Oct 2026</text>
+<path d="M55 55V280H915" stroke="#94a3b8" fill="none"/>
+<path d="M55 145H915" stroke="#334155" stroke-dasharray="4 5" fill="none"/>
+<polyline points="127.9,257.1 198.7,249.6 268.3,244.2 338.9,269.9 410.0,257.7 480.4,245.6 550.8,270.6 621.8,256.4 692.6,245.6 763.3,263.1 834.3,252.3 905.0,260.4" fill="none" stroke="#38bdf8" stroke-width="3"/>
+<polyline points="127.2,276.0 198.4,276.6 268.8,273.3 339.3,273.9 409.5,274.6 480.3,274.6 551.0,275.3 621.5,276.0 692.2,276.6 763.5,273.3 833.6,273.9 904.3,274.6" fill="none" stroke="#4ade80" stroke-width="3"/>
+<polyline points="136.8,249.6 198.7,233.4 269.4,216.6 340.0,193.6 410.6,176.1 480.5,159.9 552.2,142.3 622.3,126.1 693.3,108.6 763.9,92.4 833.8,75.5 904.4,60.0" fill="none" stroke="#fb923c" stroke-width="3"/>
+<g fill="#cbd5e1" font-family="sans-serif" font-size="13"><text x="15" y="65">326</text><text x="15" y="150">200</text><text x="35" y="285">0</text><text x="53" y="304">0 s</text><text x="455" y="304">30 s</text><text x="875" y="304">60 s</text></g>
+<g font-family="sans-serif" font-size="15"><text x="70" y="332" fill="#38bdf8">ECHO: 50/s</text><text x="340" y="332" fill="#4ade80">Simulation: 5/s</text><text x="620" y="332" fill="#fb923c">Overload: 15/s</text><text x="910" y="52" text-anchor="end" fill="#fb923c">326 unfinished</text></g>
+</svg>

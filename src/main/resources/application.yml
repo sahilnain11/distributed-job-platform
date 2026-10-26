@@ -1,0 +1,96 @@
+spring:
+  application:
+    name: distributed-job-platform
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:job_platform}
+    password: ${RABBITMQ_PASSWORD:local-rabbit-development-only}
+    connection-timeout: 5s
+    publisher-confirm-type: correlated
+    publisher-returns: true
+    template:
+      mandatory: true
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/job_platform}
+    username: ${DB_USERNAME:job_platform}
+    password: ${DB_PASSWORD:local-development-only}
+    hikari:
+      schema: job_platform
+      maximum-pool-size: ${DB_POOL_SIZE:10}
+      connection-timeout: 5000
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        default_schema: job_platform
+  flyway:
+    enabled: true
+    default-schema: job_platform
+    schemas: job_platform
+    create-schemas: true
+    clean-disabled: true
+    validate-on-migrate: true
+
+server:
+  port: ${SERVER_PORT:8080}
+
+management:
+  health:
+    rabbit:
+      enabled: ${MESSAGING_ENABLED:false}
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus
+  metrics:
+    tags:
+      application: distributed-job-platform
+    distribution:
+      maximum-expected-value:
+        jobs.first.start.delay: 1h
+        jobs.attempt.duration: 10m
+      percentiles-histogram:
+        http.server.requests: true
+        jobs.first.start.delay: true
+        jobs.attempt.duration: true
+  endpoint:
+    health:
+      show-details: never
+      probes:
+        enabled: true
+      group:
+        readiness:
+          include: readinessState,db
+
+platform:
+  messaging:
+    enabled: ${MESSAGING_ENABLED:false}
+    publisher-enabled: ${PUBLISHER_ENABLED:true}
+    worker-enabled: ${WORKER_ENABLED:true}
+    exchange: jobs.exchange
+    queue: jobs.queue
+    routing-key: jobs.execute
+    publisher-delay-ms: 1000
+    batch-size: 100
+    confirm-timeout-ms: 5000
+    worker-concurrency: 10
+    lease-seconds: 30
+  reliability:
+    heartbeat-ms: 10000
+    control-interval-ms: 1000
+    max-runtime-ms: 300000
+    retry-base-ms: 1000
+    retry-poll-ms: 1000
+    recovery-poll-ms: 10000
+    pollers-enabled: true
+  observability:
+    snapshot-enabled: true
+    snapshot-interval-ms: 10000
+
+logging:
+  structured:
+    format:
+      console: ecs

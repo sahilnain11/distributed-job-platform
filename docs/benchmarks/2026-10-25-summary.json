@@ -1,0 +1,62 @@
+{
+  "date": "2026-10-25",
+  "run_id": "bench-6b658cf7-aa63-46ff-808e-68c0443790ea",
+  "comparison_run_id": "bench-bebfc84d-e43e-4f36-bfc2-25fc6b8b5cea",
+  "jar_sha256": "8e6a47f44b4d06510745b9a6add40c4d357b63f36239888d0110374789bd91fe",
+  "runner_sha256": "22e64d6888442d7575c59def982b17e0a91e856e4c2e79e9fa276c31f8907fa0",
+  "host": {"os": "macOS 14.6 ARM64", "logical_cpus": 8, "memory_bytes": 8589934592},
+  "docker": {"version": "28.0.1", "cpus": 8, "memory_bytes": 4109803520},
+  "resources": {
+    "postgres": {"version": "17.6", "cpu_limit": 1, "memory_mib": 768},
+    "rabbitmq": {"version": "4.1.8-management", "cpu_limit": 1, "memory_mib": 768},
+    "application": {"java": "21.0.12.1", "spring_boot": "3.5.16", "heap_mib": [256, 512], "active_processor_count": 2, "os_cpu_limit": null},
+    "interference": "Development application, PostgreSQL, RabbitMQ, Prometheus and Grafana shared the host"
+  },
+  "settings": {"worker_processes": 1, "execution_slots": 10, "prefetch_each": 1, "primary_db_pool": 10, "control_db_pool": 4,
+    "publisher_batch": 100, "publisher_fixed_delay_ms": 1000, "lease_seconds": 30, "heartbeat_ms": 10000,
+    "runtime_ms": 300000, "http_threads": 16, "max_outstanding_requests": 32, "measured_seconds_each": 60, "warmup_seconds_each": 10},
+  "cases": {
+    "echo": {
+      "offered_per_second": 50, "acknowledged": 3000, "completed_during_window": 2971,
+      "database_window_seconds": 60.158383, "completion_per_second": 49.38630082527318,
+      "client_acceptance_p99_ms": 22.072958000009635, "scheduled_to_response_p99_ms": 26.035958000001358,
+      "generator_dispatch_p99_ms": 5.186166999997965,
+      "first_start_APPROX_p95_ms": 1121.124, "first_start_APPROX_p99_ms": 1184.297, "started_within_5s_APPROX_fraction": 1.0,
+      "attempt_p50_ms": 6.468, "attempt_p95_ms": 13.308, "attempt_p99_ms": 21.058,
+      "unfinished_at_window_end": 29, "outbox_pending_at_window_end": 26, "additional_observed_drain_seconds": 0.36861187499999915,
+      "initial_jobs": 100, "initial_database_bytes": 8522899, "final_database_bytes": 14003347,
+      "request_utf8_bytes": 168, "payload_jsonb_utf8_bytes": 143, "result_jsonb_utf8_bytes": 143,
+      "final_completed": 3000, "errors": 0, "unknown_commits": 0, "generator_drops": 0, "wrong_results": 0
+    },
+    "simulation": {
+      "offered_per_second": 5, "acknowledged": 300, "completed_during_window": 292,
+      "database_window_seconds": 60.109579, "completion_per_second": 4.857794795069186,
+      "client_acceptance_p99_ms": 55.503958999992165, "scheduled_to_response_p99_ms": 59.104040999997665,
+      "generator_dispatch_p99_ms": 7.3641250000093805,
+      "first_start_APPROX_p95_ms": 1002.4630000000001, "first_start_APPROX_p99_ms": 1035.549, "started_within_5s_APPROX_fraction": 1.0,
+      "attempt_p50_ms": 1022.7550000000001, "attempt_p95_ms": 1041.432, "attempt_p99_ms": 1129.976,
+      "unfinished_at_window_end": 8, "outbox_pending_at_window_end": 3, "additional_observed_drain_seconds": 2.333096000000012,
+      "initial_jobs": 3150, "initial_database_bytes": 14019731, "final_database_bytes": 14634131,
+      "request_utf8_bytes": 81, "payload_jsonb_utf8_bytes": 48, "result_jsonb_utf8_bytes": 82,
+      "final_completed": 300, "errors": 0, "unknown_commits": 0, "generator_drops": 0, "wrong_results": 0
+    },
+    "overload": {
+      "offered_per_second": 15, "acknowledged": 900, "completed_during_window": 574,
+      "database_window_seconds": 60.115453, "completion_per_second": 9.54829368082779,
+      "client_acceptance_p99_ms": 144.47562499998412, "scheduled_to_response_p99_ms": 145.8649579999758,
+      "generator_dispatch_p99_ms": 8.390166666686127,
+      "first_start_APPROX_p95_ms": 31582.282, "first_start_APPROX_p99_ms": 32947.687000000005, "started_within_5s_APPROX_fraction": 0.13111111111111112,
+      "attempt_p50_ms": 1019.3650000000001, "attempt_p95_ms": 1051.228, "attempt_p99_ms": 1113.117,
+      "unfinished_at_window_end": 326, "outbox_pending_at_window_end": 13, "additional_observed_drain_seconds": 34.89675358399998,
+      "initial_jobs": 3500, "initial_database_bytes": 14658707, "final_database_bytes": 15887507,
+      "request_utf8_bytes": 81, "payload_jsonb_utf8_bytes": 48, "result_jsonb_utf8_bytes": 82,
+      "final_completed": 900, "errors": 0, "unknown_commits": 0, "generator_drops": 0, "wrong_results": 0,
+      "unfinished_samples": [[5.79,45],[10.17,69],[15.17,94],[20.17,128],[25.16,154],[30.12,178],[35.19,204],[40.15,228],[45.17,254],[50.17,278],[55.12,303],[60.12,326]]
+    }
+  },
+  "validation": {"java_tests": 173, "python_tests": 10, "failures": 0, "skipped": 0,
+    "all_final_run_jobs_one_attempt": true, "all_final_run_ids_unique": true, "disposable_cleanup_confirmed": true,
+    "development_job_counts_after": {"COMPLETED": 7, "FAILED": 2}},
+  "limits": ["One-minute local runs, not a soak or maximum-capacity search", "Creation-to-first-start includes precommit time",
+    "No 1000/s workload offered", "No long-term availability estimate", "Delayed broker statistics are not atomic with database snapshots"]
+}

@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="550" viewBox="0 0 1000 550" style="display:block;width:100%;max-width:1000px;height:auto" role="img" aria-labelledby="title desc">
+<title id="title">Local worker scaling measurements</title>
+<desc id="desc">Adding ten slots raised completion rate from 9.52 to 14.59 jobs per second at a 15 per second offer. Twenty slots in one process reached 14.68. Raising input to 25 per second overloaded two workers. Faster polling reduced low-load ECHO first-start waiting.</desc>
+<rect width="1000" height="550" rx="12" fill="#0f172a"/>
+<g font-family="sans-serif">
+<text x="30" y="37" fill="#f8fafc" font-size="23">Local scaling — measured, not assumed</text>
+<text x="30" y="65" fill="#94a3b8" font-size="14">One API/publisher + worker JVMs · same dependency limits · 60-second offers</text>
+<text x="225" y="108" fill="#cbd5e1" font-size="14">Completed jobs/s during DB window</text>
+<text x="685" y="108" fill="#cbd5e1" font-size="14">Unfinished</text><text x="820" y="108" fill="#cbd5e1" font-size="14">Start p95*</text>
+<g fill="#e2e8f0" font-size="15"><text x="30" y="153">1 × 10 slots, offer 15/s</text><text x="30" y="211">2 × 10 slots, offer 15/s</text><text x="30" y="269">1 × 20 slots, offer 15/s</text><text x="30" y="327">2 × 10 slots, offer 25/s</text></g>
+<rect x="225" y="130" width="190.46" height="30" rx="5" fill="#fb923c"/>
+<rect x="225" y="188" width="291.77" height="30" rx="5" fill="#4ade80"/>
+<rect x="225" y="246" width="293.61" height="30" rx="5" fill="#38bdf8"/>
+<rect x="225" y="304" width="356.14" height="30" rx="5" fill="#e879f9"/>
+<g fill="#f8fafc" font-size="16"><text x="426" y="152">9.52</text><text x="527" y="210">14.59</text><text x="529" y="268">14.68</text><text x="592" y="326">17.81</text></g>
+<g font-size="16"><text x="710" y="152" fill="#fb923c">327</text><text x="710" y="210" fill="#4ade80">21</text><text x="710" y="268" fill="#38bdf8">15</text><text x="710" y="326" fill="#e879f9">427</text><text x="825" y="152" fill="#e2e8f0">31.26 s</text><text x="825" y="210" fill="#e2e8f0">1.03 s</text><text x="825" y="268" fill="#e2e8f0">1.12 s</text><text x="825" y="326" fill="#e2e8f0">23.65 s</text></g>
+<path d="M30 355H965" stroke="#334155"/>
+<text x="30" y="390" fill="#f8fafc" font-size="18">ECHO polling comparison at 15/s — creation-to-start p95*</text>
+<text x="30" y="427" fill="#cbd5e1" font-size="14">1000ms fixed delay</text><rect x="225" y="407" width="300" height="25" rx="4" fill="#facc15"/><text x="540" y="426" fill="#f8fafc" font-size="16">1.415 s</text>
+<text x="30" y="465" fill="#cbd5e1" font-size="14">100ms, test only</text><rect x="225" y="445" width="25.46" height="25" rx="4" fill="#38bdf8"/><text x="270" y="464" fill="#f8fafc" font-size="16">0.120 s</text>
+<text x="30" y="506" fill="#94a3b8" font-size="13">*Approximation includes precommit time. More JVMs add resources. Invalid dropped-arrival runs are excluded.</text>
+<text x="30" y="528" fill="#94a3b8" font-size="13">Local observations only; no Kubernetes, HA, linear-scaling, 1000/s or availability guarantee.</text>
+</g></svg>

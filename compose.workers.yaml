@@ -1,0 +1,83 @@
+# Standalone project: never merge with the persistent development compose.yaml.
+name: job-platform-workers
+
+x-application: &application
+  image: job-platform-local:java21
+  build:
+    context: .
+    dockerfile: Dockerfile
+  init: true
+  read_only: true
+  tmpfs: [/tmp]
+  cap_drop: [ALL]
+  security_opt: [no-new-privileges:true]
+  cpus: 1
+  mem_limit: 512m
+  stop_grace_period: 20s
+  environment: &application-environment
+    DB_URL: jdbc:postgresql://postgres:5432/job_platform
+    DB_USERNAME: job_platform
+    DB_PASSWORD: local-workers-development-only
+    RABBITMQ_HOST: rabbitmq
+    RABBITMQ_USERNAME: job_platform
+    RABBITMQ_PASSWORD: local-workers-rabbit-only
+    MESSAGING_ENABLED: "true"
+  depends_on:
+    postgres:
+      condition: service_healthy
+    rabbitmq:
+      condition: service_healthy
+
+services:
+  postgres:
+    image: postgres:17.6
+    cpus: 1
+    mem_limit: 768m
+    environment:
+      POSTGRES_DB: job_platform
+      POSTGRES_USER: job_platform
+      POSTGRES_PASSWORD: local-workers-development-only
+    volumes:
+      - workers_postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U job_platform -d job_platform"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  rabbitmq:
+    image: rabbitmq:4.1.8-management
+    hostname: workers-rabbit
+    cpus: 1
+    mem_limit: 768m
+    environment:
+      RABBITMQ_DEFAULT_USER: job_platform
+      RABBITMQ_DEFAULT_PASS: local-workers-rabbit-only
+    volumes:
+      - workers_rabbit:/var/lib/rabbitmq
+      - ./docker/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
+    healthcheck:
+      test: [CMD, rabbitmq-diagnostics, -q, check_running]
+      interval: 3s
+      timeout: 5s
+      retries: 30
+
+  api:
+    <<: *application
+    ports:
+      - "127.0.0.1:${WORKERS_API_PORT:-8081}:8080"
+    environment:
+      <<: *application-environment
+      WORKER_ENABLED: "false"
+
+  worker:
+    <<: *application
+    environment:
+      <<: *application-environment
+      PUBLISHER_ENABLED: "false"
+      WORKER_ENABLED: "true"
+    command: ["--platform.reliability.pollers-enabled=false"]
+
+volumes:
+  workers_postgres:
+  workers_rabbit:

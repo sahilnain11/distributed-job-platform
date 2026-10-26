@@ -1,0 +1,129 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Verify project (Java 21, macOS)",
+			"type": "shell",
+			"command": "export JAVA_HOME=\"$(/usr/libexec/java_home -v 21)\" && export PATH=\"$JAVA_HOME/bin:$PATH\" && mvn --batch-mode --no-transfer-progress verify",
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "test"
+		},
+		{
+			"label": "Verify benchmark runner",
+			"type": "shell",
+			"command": "python3 -m unittest discover -s tools -p 'test_*.py' -v",
+			"problemMatcher": [],
+			"group": "test"
+		},
+		{
+			"label": "Run isolated learning benchmarks (Java 21, macOS)",
+			"type": "shell",
+			"command": "export JAVA_HOME=\"$(/usr/libexec/java_home -v 21)\" && export PATH=\"$JAVA_HOME/bin:$PATH\" && python3 tools/benchmark.py",
+			"problemMatcher": []
+		},
+		{
+			"label": "Run isolated scaling comparisons (Java 21, macOS)",
+			"type": "shell",
+			"command": "export JAVA_HOME=\"$(/usr/libexec/java_home -v 21)\" && export PATH=\"$JAVA_HOME/bin:$PATH\" && python3 tools/scaling.py",
+			"problemMatcher": []
+		},
+		{
+			"label": "Build platform container (verified JAR required)",
+			"type": "shell",
+			"command": "docker build -t job-platform-local:java21 .",
+			"problemMatcher": []
+		},
+		{
+			"label": "Start standalone container platform (two workers)",
+			"type": "shell",
+			"command": "docker compose -f compose.workers.yaml up -d --build --scale worker=2 --wait",
+			"problemMatcher": []
+		},
+		{
+			"label": "Stop standalone container platform (preserve data)",
+			"type": "shell",
+			"command": "docker compose -f compose.workers.yaml stop",
+			"problemMatcher": []
+		},
+		{
+			"label": "Verify container platform (disposable two-worker smoke)",
+			"type": "shell",
+			"command": "python3 tools/container_smoke.py",
+			"problemMatcher": []
+		},
+		{
+			"label": "Start PostgreSQL",
+			"type": "shell",
+			"command": "docker compose up -d --wait postgres",
+			"problemMatcher": []
+		},
+		{
+			"label": "Start infrastructure",
+			"type": "shell",
+			"command": "docker compose up -d --wait postgres rabbitmq",
+			"problemMatcher": []
+		},
+		{
+			"label": "Start monitoring (Prometheus and Grafana)",
+			"type": "shell",
+			"command": "docker compose --profile monitoring up -d --wait postgres rabbitmq prometheus grafana",
+			"problemMatcher": []
+		},
+		{
+			"label": "Stop monitoring (preserve data)",
+			"type": "shell",
+			"command": "docker compose --profile monitoring stop prometheus grafana",
+			"problemMatcher": []
+		},
+		{
+			"label": "Run platform (Java 21, macOS)",
+			"type": "shell",
+			"command": "export JAVA_HOME=\"$(/usr/libexec/java_home -v 21)\" && export PATH=\"$JAVA_HOME/bin:$PATH\" && export MESSAGING_ENABLED=true && mvn --batch-mode --no-transfer-progress spring-boot:run",
+			"dependsOn": "Start infrastructure",
+			"isBackground": true,
+			"problemMatcher": {
+				"owner": "foundation-startup",
+				"pattern": {
+					"regexp": "^(.*):(\\d+):(\\d+): (error|warning): (.*)$",
+					"file": 1,
+					"line": 2,
+					"column": 3,
+					"severity": 4,
+					"message": 5
+				},
+				"background": {
+					"activeOnStart": true,
+					"beginsPattern": "Starting JobPlatformApplication",
+					"endsPattern": "Started JobPlatformApplication"
+				}
+			}
+		},
+		{
+			"label": "Run API only (Java 21, macOS)",
+			"type": "shell",
+			"command": "export JAVA_HOME=\"$(/usr/libexec/java_home -v 21)\" && export PATH=\"$JAVA_HOME/bin:$PATH\" && export MESSAGING_ENABLED=false && mvn --batch-mode --no-transfer-progress spring-boot:run",
+			"dependsOn": "Start PostgreSQL",
+			"isBackground": true,
+			"problemMatcher": []
+		},
+		{
+			"label": "Stop infrastructure (preserve data)",
+			"type": "shell",
+			"command": "docker compose stop postgres rabbitmq",
+			"problemMatcher": []
+		},
+		{
+			"label": "Check platform health",
+			"type": "shell",
+			"command": "curl --fail --silent --show-error http://localhost:8080/actuator/health && printf '\\n' && curl --fail --silent --show-error http://localhost:8080/actuator/health/readiness && printf '\\n'",
+			"problemMatcher": []
+		},
+		{
+			"label": "Stop PostgreSQL (preserve data)",
+			"type": "shell",
+			"command": "docker compose stop postgres",
+			"problemMatcher": []
+		}
+	]
+}
