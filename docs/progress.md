@@ -44,7 +44,7 @@ flowchart TB
 | Item | Current value |
 | --- | --- |
 | Current activity | Public repository published with verified main commit and first hosted CI pass; implementation learning remains in progress |
-| Next milestone | Maintain supported pinned CI actions and resume-friendly presentation, then continue the implementation walkthrough |
+| Next milestone | Continue the implementation walkthrough; public repository and resume-friendly presentation are available |
 | Latest validation | 2026-10-26: 173 Java + 79 Python tests passed; public guard passed for 109 staged files; both Compose definitions validated |
 | Blockers | No publication blocker; local scope/measurements and hosted checks do not establish Kubernetes/HA or every target |
 
@@ -64,6 +64,14 @@ passed on 2026-10-26, including public-file checks, Python/Java suites, Compose
 validation and actual disposable two-worker container execution. Build output,
 private environment files and raw logs are excluded. Actions are updated to
 supported SHA-pinned versions after the first run reported deprecation warnings.
+
+**2026-10-27 follow-up:** resumed the paused four-file update, reran all 79 Python
+tests, public-file checks and Compose validation, and pushed commit `66f4500`
+without rewriting history. Its [hosted verification](https://github.com/sahilnain11/distributed-job-platform/actions/runs/40460537221)
+passed, including real dependency tests and the two-worker container smoke.
+That run exposed a remaining Node 20 warning in artifact upload v5; the follow-up
+workflow uses a SHA-pinned v6 revision whose declared runtime was checked as Node 24.
+The README badge reports subsequent workflow results rather than assuming them.
 
 No license was added: the owner selected **no license yet**. Public visibility
 does not grant reuse rights. Example passwords remain explicitly local/disposable;
