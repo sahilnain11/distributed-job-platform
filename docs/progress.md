@@ -43,10 +43,27 @@ flowchart TB
 
 | Item | Current value |
 | --- | --- |
-| Current activity | Public repository published with verified main commit and first hosted CI pass; implementation learning remains in progress |
+| Current activity | Public repository published; illustrated portfolio demo/README animation/transcript prepared and locally checked; implementation learning remains in progress |
 | Next milestone | Continue the implementation walkthrough; public repository and resume-friendly presentation are available |
 | Latest validation | 2026-10-26: 173 Java + 79 Python tests passed; public guard passed for 109 staged files; both Compose definitions validated |
 | Blockers | No publication blocker; local scope/measurements and hosted checks do not establish Kubernetes/HA or every target |
+
+### Portfolio Video / Visual Demo — 2026-10-27
+
+- [x] Generate a 60-second silent captioned MP4 and a small animated GIF from the existing explorer's illustrative snapshots.
+- [x] Clearly label the offline/new-example nature; no actual job, dashboard, credential or benchmark recording is implied.
+- [x] Provide a local player with pause/seek, readable transcript/timestamps, storyboard and optional regeneration tool.
+- [x] Check twelve scenes, H.264/no-audio encoding, GIF timing, local Chromium playback/pause/seek and public artifact limits; no development service/data changes.
+- [x] Run all 86 Python tests (79 existing plus 7 media checks), document the evidence and keep raw render frames ignored.
+
+Publication is separate from local rendering: inspect the demo commit's
+[actual workflow run](https://github.com/sahilnain11/distributed-job-platform/actions/workflows/ci.yml)
+for hosted validation. A media render or earlier passing run alone is not evidence
+that a later published revision passed CI.
+
+Assets and transcript: [demo guide](demo/README.md). The MP4 (~350KB) and GIF
+(~276KB) each fit the existing 1MB public-artifact guard. Video generation is an
+optional developer tool, not a Playwright/ffmpeg runtime dependency for the platform.
 
 ### Public Repository Preparation — 2026-10-26
 

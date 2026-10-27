@@ -1,0 +1,117 @@
+{
+  "title": "Distributed Job Platform — illustrated walkthrough",
+  "disclosure": "Illustrated, offline walkthrough — not a live execution or benchmark recording.",
+  "seconds_per_scene": 5,
+  "width": 1280,
+  "height": 720,
+  "scenes": [
+    {
+      "id": "architecture",
+      "chapter": "01 / THE DESIGN",
+      "title": "Accept now. Execute later.",
+      "caption": "PostgreSQL owns job state. RabbitMQ carries notifications. The same application can run these roles together or in separate processes.",
+      "focus": "PostgreSQL",
+      "scenario": "success",
+      "step": 0
+    },
+    {
+      "id": "acceptance",
+      "chapter": "02 / DURABLE ACCEPTANCE",
+      "title": "202 comes after the commit.",
+      "caption": "Job, payload, pending outbox event and saved request outcome commit together. Repeating the same key and input replays the original response.",
+      "focus": "API",
+      "scenario": "success",
+      "step": 1
+    },
+    {
+      "id": "publication",
+      "chapter": "03 / THE OUTBOX BRIDGE",
+      "title": "Confirm delivery intent. Expect duplicates.",
+      "caption": "Publish a persistent job reference, require broker confirmation and routing success, then mark the event published. There is no atomic DB/Rabbit commit.",
+      "focus": "Publisher",
+      "scenario": "success",
+      "step": 2
+    },
+    {
+      "id": "claim",
+      "chapter": "04 / ONE CURRENT OWNER",
+      "title": "A message is not permission to run.",
+      "caption": "Lock the queued job, create a fresh attempt token and lease, increment counters, then commit. Handler execution runs outside that transaction.",
+      "focus": "Worker",
+      "scenario": "success",
+      "step": 3
+    },
+    {
+      "id": "completion",
+      "chapter": "05 / OWNED OUTCOME",
+      "title": "Prove ownership again before saving.",
+      "caption": "Completion rechecks the current attempt, fresh database time, lease and runtime. Job, completed attempt and result commit atomically.",
+      "focus": "PostgreSQL",
+      "scenario": "success",
+      "step": 5
+    },
+    {
+      "id": "acknowledgement",
+      "chapter": "06 / COMMIT BEFORE ACK",
+      "title": "Save the outcome. Then acknowledge.",
+      "caption": "If success commits but the ACK is lost, redelivery sees completed state instead of starting another attempt. ACK can also follow a stored failure or retry schedule.",
+      "focus": "RabbitMQ",
+      "scenario": "success",
+      "step": 6
+    },
+    {
+      "id": "duplicate",
+      "chapter": "07 / NEW EXAMPLE: DUPLICATE SAFETY",
+      "title": "Two deliveries. One current claim.",
+      "caption": "A successful send followed by a failed outbox mark can cause a resend. The second claim sees RUNNING and skips execution; request keys and attempt ownership solve different problems.",
+      "focus": "PostgreSQL",
+      "scenario": "duplicate",
+      "step": 4
+    },
+    {
+      "id": "retry",
+      "chapter": "08 / NEW EXAMPLE: RETRIES",
+      "title": "One job. Three distinct attempts.",
+      "caption": "A simulation configured to fail twice records FAILED, FAILED, COMPLETED. Each due retry creates a new outbox event; four total attempts are allowed per cycle.",
+      "focus": "Worker",
+      "scenario": "retry",
+      "step": 6
+    },
+    {
+      "id": "expired",
+      "chapter": "09 / NEW EXAMPLE: WORKER LOSS",
+      "title": "A dead worker cannot renew its lease.",
+      "caption": "Without renewals, the lease expires. Even before recovery changes RUNNING state, the old attempt no longer has permission to complete or renew.",
+      "focus": "PostgreSQL",
+      "scenario": "crash",
+      "step": 4
+    },
+    {
+      "id": "recovery",
+      "chapter": "10 / RECOVERY",
+      "title": "Record EXPIRED, then use the retry path.",
+      "caption": "Recovery locks and rechecks the abandoned attempt. If budget remains, it records EXPIRED and RETRYING; the due retry later creates another notification.",
+      "focus": "PostgreSQL",
+      "scenario": "crash",
+      "step": 5
+    },
+    {
+      "id": "replacement",
+      "chapter": "11 / STALE-WORKER PROTECTION",
+      "title": "A new token fences the old outcome.",
+      "caption": "Replacement attempt A2 completes. Old A1 cannot overwrite its result. These checks protect platform state, not exactly-once external actions or forced cancellation.",
+      "focus": "Worker",
+      "scenario": "crash",
+      "step": 6
+    },
+    {
+      "id": "evidence",
+      "chapter": "12 / EVIDENCE AND LIMITS",
+      "title": "Read the tests. Inspect the measurements.",
+      "caption": "Real dependency outages, duplicate delivery, killed-worker recovery and local scaling have test/report evidence. No Kubernetes, HA, 1,000 jobs/s or 99.9% availability claim.",
+      "focus": "PostgreSQL",
+      "scenario": "crash",
+      "step": 6
+    }
+  ]
+}

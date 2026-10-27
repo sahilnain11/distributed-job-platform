@@ -10,6 +10,19 @@ failure tests, and reproducible local scaling experiments—not production claim
 **Stack:** Java 21 · Spring Boot 3.5.16 · PostgreSQL 17.6 · RabbitMQ 4.1.8 ·
 Maven 3.9+ · Flyway · Testcontainers · Prometheus / Grafana · Docker Compose.
 
+## One-minute visual walkthrough
+
+[![Illustrated walkthrough: acceptance, execution, duplicate safety, retries and recovery](docs/demo/preview.gif)](https://github.com/sahilnain11/distributed-job-platform/raw/refs/heads/main/docs/demo/walkthrough.mp4)
+
+**[Watch/download the MP4](https://github.com/sahilnain11/distributed-job-platform/raw/refs/heads/main/docs/demo/walkthrough.mp4)**
+· [Text transcript and timestamps](docs/demo/README.md)
+· [Interactive explorer](docs/implementation-explorer.html)
+
+60 seconds, silent with on-screen explanations. **Illustrated offline walkthrough,
+not a live execution or benchmark recording.** Separate examples reuse teaching
+IDs; no real jobs or credentials are shown. GitHub displays the GIF; open the MP4
+to pause/seek, or use the transcript without animation. Media stays below 1MB each.
+
 ## What it implements
 
 - **Durable acceptance:** job, payload, outbox event, and saved HTTP outcome commit
@@ -140,6 +153,10 @@ idempotency, rollback, confirms/redelivery, stale ownership, lease renewal,
 runtime cancellation, dependency outages, recovery after a worker JVM kill, and
 public-file/link checks. The 79 Python tests include eight publication-guard checks
 in addition to the earlier 71 tooling tests. These are local results, not hosted CI.
+
+**Tooling rechecked 2026-10-27: 86 Python tests passed**, adding seven offline
+storyboard/media checks. The illustrated video was also decoded and its local
+Chromium playback, pause and seeking verified; it is not a new job-performance test.
 
 **[GitHub Actions workflow](.github/workflows/ci.yml):** the
 [first hosted verification](https://github.com/sahilnain11/distributed-job-platform/actions/runs/40377713810)
