@@ -1,5 +1,7 @@
 # Distributed Job Processing Platform
 
+[![Verify](https://github.com/sahilnain11/distributed-job-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/sahilnain11/distributed-job-platform/actions/workflows/ci.yml)
+
 A Java backend for durable asynchronous jobs: accept work through HTTP, publish
 through RabbitMQ, and track execution, retries, and crash recovery in PostgreSQL.
 Built to explore distributed-systems correctness with real dependencies, explicit
@@ -80,11 +82,13 @@ maximum capacity, **1,000 jobs/s**, nor **99.9% availability**.
 
 ## Quick start
 
-From an existing checkout, use **JDK 21**, **Maven 3.9+**, and running Docker with
+Use **JDK 21**, **Maven 3.9+**, and running Docker with
 Compose v2. Check `java -version` and `mvn -version` use the same JDK. Default
 ports: 5432, 5672, 15672, and 8080. Do not launch a second app on port 8080.
 
 ```sh
+git clone https://github.com/sahilnain11/distributed-job-platform.git
+cd distributed-job-platform
 docker compose up -d --wait postgres rabbitmq
 SERVER_ADDRESS=127.0.0.1 MESSAGING_ENABLED=true mvn spring-boot:run
 ```
@@ -137,8 +141,11 @@ runtime cancellation, dependency outages, recovery after a worker JVM kill, and
 public-file/link checks. The 79 Python tests include eight publication-guard checks
 in addition to the earlier 71 tooling tests. These are local results, not hosted CI.
 
-**[GitHub Actions workflow](.github/workflows/ci.yml):** check the first hosted run after publication; configuring a
-workflow alone is not evidence of passing CI. No remote-CI status is claimed here.
+**[GitHub Actions workflow](.github/workflows/ci.yml):** the
+[first hosted verification](https://github.com/sahilnain11/distributed-job-platform/actions/runs/40377713810)
+passed on 2026-10-26: public-file checks, Python tests, Compose validation,
+Java tests with real PostgreSQL/RabbitMQ, and disposable two-worker container smoke.
+Use the workflow badge for subsequent results; one passing run is not a production guarantee.
 
 ## Explore the implementation
 

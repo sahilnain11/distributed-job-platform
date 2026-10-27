@@ -43,10 +43,10 @@ flowchart TB
 
 | Item | Current value |
 | --- | --- |
-| Current activity | Public repository preparation for portfolio/resume: concise README, independent Git repository, CI and tracked-file guard; implementation learning remains in progress |
-| Next milestone | Authenticate to the requested GitHub account, publish without overwriting an existing repository, then inspect the first actual CI run |
+| Current activity | Public repository published with verified main commit and first hosted CI pass; implementation learning remains in progress |
+| Next milestone | Maintain supported pinned CI actions and resume-friendly presentation, then continue the implementation walkthrough |
 | Latest validation | 2026-10-26: 173 Java + 79 Python tests passed; public guard passed for 109 staged files; both Compose definitions validated |
-| Blockers | GitHub authentication required for publication; no hosted CI result yet. Local scope/measurements do not establish Kubernetes/HA or every target |
+| Blockers | No publication blocker; local scope/measurements and hosted checks do not establish Kubernetes/HA or every target |
 
 ### Public Repository Preparation — 2026-10-26
 
@@ -55,8 +55,15 @@ flowchart TB
 - [x] Add least-privilege GitHub Actions checks, security/contribution guidance, ignore rules and eight tested public-file guard checks.
 - [x] Configure the user-approved public author identity locally only; GitHub no-reply email avoids publishing personal email.
 - [x] Verify 173 Java/79 Python tests, staged public paths, documentation links and Compose syntax locally.
-- [ ] Publish to the requested GitHub account after direct authentication; never force-push or overwrite an existing repo.
-- [ ] Verify remote contents/visibility and the first hosted CI result; workflow presence alone is not a passing run.
+- [x] Publish to the requested GitHub account after direct authentication; no force-push or existing history overwritten.
+- [x] Verify public visibility, all 109 intended files, matching initial main commit `1b941e6`, and the first hosted CI result.
+
+Public repository: [sahilnain11/distributed-job-platform](https://github.com/sahilnain11/distributed-job-platform).
+[First hosted verification](https://github.com/sahilnain11/distributed-job-platform/actions/runs/40377713810)
+passed on 2026-10-26, including public-file checks, Python/Java suites, Compose
+validation and actual disposable two-worker container execution. Build output,
+private environment files and raw logs are excluded. Actions are updated to
+supported SHA-pinned versions after the first run reported deprecation warnings.
 
 No license was added: the owner selected **no license yet**. Public visibility
 does not grant reuse rights. Example passwords remain explicitly local/disposable;

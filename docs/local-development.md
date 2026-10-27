@@ -144,7 +144,9 @@ The latest local publication-readiness results are **173 Java / 79 Python tests
 passed on 2026-10-26**, including eight publication-guard tests beyond the earlier
 71 tooling tests. Earlier benchmark/deployment reports retain their original dates;
 see [progress](progress.md) and the [scaling report](benchmarks/2026-10-25-scaling.md).
-Local results are not a successful hosted GitHub Actions run.
+The [first hosted GitHub Actions verification](https://github.com/sahilnain11/distributed-job-platform/actions/runs/40377713810)
+also passed on 2026-10-26, including the real-dependency suite and disposable
+container smoke. Later workflow results remain separate from that recorded evidence.
 
 Before publishing, stage only intended project files and run
 `python3 tools/check_repository.py`. This focused guard checks tracked paths,
